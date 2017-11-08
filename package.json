@@ -1,0 +1,13 @@
+{
+  "name": "tsb-statement-crawler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./index"
+  },
+  "dependencies": {
+    "csv-writer": "^0.0.3",
+    "nightmare": "^2.10.0"
+  }
+}
