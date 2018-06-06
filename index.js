@@ -23,21 +23,23 @@ const records = createCsvWriter({
   ]
 });
 
-const startPage = 'https://online.tsb.co.uk/personal/logon/login.jsp';
+console.log('wat')
 
-const userIdField = '[id="frmLogin:strCustomerLogin_userID"]';
-const passwordField = '[id="frmLogin:strCustomerLogin_pwd"]';
-const loginButton = '[id="frmLogin:btnLogin1"]';
+const startPage = 'https://internetbanking.tsb.co.uk/personal/logon/login/';
+
+const userIdField = '[name="userId"]';
+const passwordField = '[name="password"]';
+const loginButton = '[type="submit"]';
 
 
 // Memorable info
-const confirmMemInfo = '[id="frmentermemorableinformation1:btnContinue"]';
+const confirmMemInfo = '[type="submit"]';
 
 // Crawling statements
-const previousLink = '.previous input';
+const previousLink = 'a[action="previous"]';
 const firstDate = 'tbody tr:first-child > *:first-child';
 
-const crawlPagesUntil = dateString => 
+const crawlPagesUntil = dateString =>
 Promise.resolve()
 .then(() => nightmare.wait('tbody tr'))
 .then(() => nightmare.evaluate(() => {
@@ -66,16 +68,15 @@ Promise.resolve()
   }
 })
 
-
 nightmare.goto(startPage)
 .wait(userIdField)
 .type(userIdField, userId)
 .type(passwordField, password)
 .click(loginButton)
-.wait('#frmentermemorableinformation1')
+.wait('.memorable-information-select-size')
 .evaluate(() => {
-  const characterDropdowns = '[id="frmentermemorableinformation1"] select';
-  const characterLabels = '[id="frmentermemorableinformation1"] label';
+  const characterDropdowns = '.memorable-information-select-size select';
+  const characterLabels = '.memorable-information-select-size span';
   const res = [];
 
   document.querySelectorAll(characterDropdowns).forEach(select => {
@@ -84,16 +85,16 @@ nightmare.goto(startPage)
     });
   })
 
-  document.querySelectorAll(characterLabels).forEach((label, index) => {
-    res[index].label = 'label[id="' + label.id + '"]';
-    res[index].number = parseInt(label.textContent[10]) - 1;
+  document.querySelectorAll(characterLabels).forEach((node, index) => {
+    res[index].number = Number(node.textContent[node.textContent.length - 2]) - 1
   });
 
+  console.log('res', res)
   return res;
 })
-.then(res => res.reduce((accum, val) => accum.then(() => nightmare.select(val.select, `&nbsp;${secret[val.number].toLowerCase()}`)), Promise.resolve()))
-.then(() => nightmare.click(confirmMemInfo).wait('.accountDetails a').evaluate(() => document.querySelector('.accountDetails a').id))
-.then(linkId => nightmare.click(`[id="${linkId}"]`))
+.then(res => res.reduce((accum, val) => accum.then(() => nightmare.select(val.select, `${secret[val.number].toLowerCase()}`)), Promise.resolve()))
+.then(() => nightmare.click(confirmMemInfo).wait('.accounts-std a'))
+.then(() => nightmare.click(`.accounts-std a`))
 .then(() => crawlPagesUntil(dateStringUntil))
 .then(() => console.log('done done done'))
 .then(() => nightmare.end())
