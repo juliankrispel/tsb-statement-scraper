@@ -19,11 +19,8 @@ const records = createCsvWriter({
     {id: 'type', title: 'TYPE'},
     {id: 'in', title: 'IN'},
     {id: 'out', title: 'OUT'},
-    {id: 'balance', title: 'BALANCE'},
   ]
 });
-
-console.log('wat')
 
 const startPage = 'https://internetbanking.tsb.co.uk/personal/logon/login/';
 

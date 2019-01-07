@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "csv-writer": "^0.0.3",
+    "csvtojson": "^2.0.8",
+    "date-fns": "^1.29.0",
     "nightmare": "^2.10.0"
   }
 }
